@@ -4,36 +4,52 @@ import BoardComponents from './components/BoardComponents'
 import { Board } from './models/Board'
 import { Player } from './models/Players'
 import { Colors } from './models/Colors'
-import LostFigures from './components/lostFigures'
 import Timer from './components/Timer'
+import AnalisysBoard from './components/AnalisysBoard'
+import { Cell } from './models/Cell'
 
 const App = () => {
     const [board, setBoard] = useState(new Board())
     const [whitePlayer, setWhitePlayer] = useState(new Player(Colors.WHITE))
     const [blackPlayer, setBlackPlayer] = useState(new Player(Colors.BLACK))
-    const [currentPlayer, setCurrentPlayer] = useState<Player>(blackPlayer)
-
+    const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  
     useEffect(() => {
         restart()
+        setCurrentPlayer(whitePlayer);
     }, [])
 
+    useEffect(() => {
+        console.log('хер')
+        console.log(currentPlayer)
+    }, [setCurrentPlayer])
     
     function restart() {
-        const newBoard = new Board()
+        const newBoard = new Board();
         newBoard.initCells()
         newBoard.addFigures()
         setBoard(newBoard)
     }
+  
     function swapPlayer() {
-        setCurrentPlayer(currentPlayer.color === Colors.WHITE ? blackPlayer : whitePlayer)
+      setCurrentPlayer(currentPlayer?.color === Colors.WHITE ? blackPlayer : whitePlayer)
+      console.log('срабоатло')
     }
+  
     return (
-        <div className="app">
-            <Timer currentPlayer={currentPlayer} restart={restart}/>
-            <BoardComponents board={board} setBoard={setBoard} currentPlayer={currentPlayer} swapPlayer={swapPlayer}/>
+      <div className="app">
+        <Timer
+          restart={restart}
+          currentPlayer={currentPlayer}
+        />
+        <BoardComponents
+          board={board}
+          setBoard={setBoard}
+          currentPlayer={currentPlayer}
+          swapPlayer={swapPlayer}
+        />
             <div>
-                <LostFigures figures={board.lostBlackFigures} title='lost black figures'/>
-                <LostFigures figures={board.lostWhiteFigures} title='lost white figures'/>
+                <AnalisysBoard board={board} setBoard={setBoard} />
             </div>
         </div>
     )

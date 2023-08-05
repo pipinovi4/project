@@ -1,5 +1,6 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect} from 'react';
 import {Cell} from "../models/Cell";
+import { FigureNames } from '../figures/Figure';
 
 interface CellProps {
   cell: Cell;
@@ -8,9 +9,10 @@ interface CellProps {
 }
 
 const CellComponent: FC<CellProps> = ({cell, selected, click}) => {
+  const zalupa = cell.figure?.name === FigureNames.KING && cell.cellAttacked 
   return (
     <div
-      className={['cell', cell.color, selected ? "selected" : ''].join(' ')}
+      className={['cell', cell.color, selected ? "selected" : '', zalupa ? 'king-attacked' : ''].join(' ')}
       onClick={() => click(cell)}
       style={{background: cell.available && cell.figure ? '#6eb5d1' : ''}}
     >

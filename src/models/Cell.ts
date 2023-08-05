@@ -1,4 +1,5 @@
-import { Figure } from '../figures/Figure'
+import { Figure, FigureNames } from '../figures/Figure'
+import { Rook } from '../figures/Rook'
 import { Board } from './Board'
 import { Colors } from './Colors'
 
@@ -10,7 +11,7 @@ export class Cell {
     board: Board
     available: boolean
     id: number
-    
+    cellAttacked = false
 
     constructor(
         board: Board,
@@ -46,7 +47,9 @@ export class Cell {
         const max = Math.max(this.y, target.y)
 
         for (let y = min + 1; y < max; y++) {
-            if (!this.board.getCell(this.x, y).isEmpty()) return false
+            if (!this.board.getCell(this.x, y).isEmpty()) {
+                return false
+            }
         }
         return true
     }
@@ -58,7 +61,9 @@ export class Cell {
         const max = Math.max(this.x, target.x)
 
         for (let x = min + 1; x < max; x++) {
-            if (!this.board.getCell(x, this.y).isEmpty()) return false
+            if (!this.board.getCell(x, this.y).isEmpty()) {
+                return false
+            }
         }
         return true
     }
@@ -74,7 +79,7 @@ export class Cell {
 
         for (let i = 1; i < absY; i++) {
             if (!this.board.getCell(this.x + dx * i, this.y + dy * i).isEmpty())
-                return false
+            return false
         }
         return true
     }
@@ -87,9 +92,45 @@ export class Cell {
     moveFigure(target: Cell) {
         if (this.figure && this.figure?.canMove(target)) {
             this.figure.moveFigure(target)
+            this.figure.isMoved = true
+            this.board.moveRecord.push(`${(target.x, target.y)}`)
             if (target.figure) {
                 this.addLostFigure(target.figure)
             }
+            if (
+                this.figure.name === FigureNames.KING &&
+                !this.board.kingCastled
+            ) {
+                const colorFigure =
+                    this.figure.color === Colors.WHITE
+                        ? Colors.WHITE
+                        : Colors.BLACK
+                const rookPlaceRight = this.board.getCell(target.x - 1, this.y)
+                const rookPlaceLeft = this.board.getCell(target.x + 1, this.y)
+                if (
+                    this.board.getCell(target.x + 1, this.y).figure?.name ===
+                        FigureNames.ROOK &&
+                    this.board.kingCanCastledRight
+                ) {
+                    this.board.getCell(target.x + 1, this.y).figure = null
+                    rookPlaceRight.figure = new Rook(
+                        colorFigure,
+                        rookPlaceRight
+                    )
+                    rookPlaceRight.figure.hasMovedFlag = true
+                    console.log('машонка - 1')
+                } else if (
+                    this.board.getCell(target.x - 2, this.y).figure?.name ===
+                        FigureNames.ROOK &&
+                    this.board.kingCanCastledLeft
+                ) {
+                    this.board.getCell(target.x - 2, this.y).figure = null
+                    rookPlaceLeft.figure = new Rook(colorFigure, rookPlaceLeft)
+                    rookPlaceLeft.figure.hasMovedFlag = true
+                    console.log('машонка - 2')
+                }
+            }
+
             target.setFigure(this.figure)
             this.figure = null
         }

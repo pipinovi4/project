@@ -54,8 +54,19 @@
 }
 
 .lost {
-    height: calc(50vh - 60px);
+    height: 50px;
     padding: 30px;
     margin-left: 50px;
     background-color: #575757;
+}
+
+.analysis-board {
+    height: calc(100vh - 60px);
+    padding: 30px;
+    margin-left: 50px;
+    background-color: #575757;
+}
+
+.king-attacked {
+    background-color: #123123;
 }
