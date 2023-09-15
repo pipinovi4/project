@@ -1,4 +1,4 @@
-import React, {FC, useState, useRef, useEffect} from 'react';
+import React, {FC, useState, useRef, useEffect, useCallback} from 'react';
 import { Player } from '../models/Players';
 import { Colors } from '../models/Colors';
 
@@ -12,30 +12,33 @@ const Timer: FC<TimerProps>  = ({currentPlayer, restart}) => {
   const [whiteTime, setWhiteTime] = useState(300)
   const timer = useRef<null | ReturnType<typeof setInterval>>(null)
 
-  useEffect(() => {
-    startTimer()
-  }, [currentPlayer])
+  const decrementBlackTimer = useCallback(() => {
+    if (blackTime === 0) {
+      restart()
+    }
+    setBlackTime(prev => prev - 1)
+  }, [blackTime, restart])
 
-  function startTimer () {
+  const decrementWhiteTimer = useCallback(() => {
+    if (whiteTime === 0) {
+      restart()
+    }
+    setWhiteTime(prev => prev - 1)
+  },[restart, whiteTime])
+  
+  const startTimer = useCallback(() => {
     if (timer.current) {
       clearInterval(timer.current)
     }
     const callback = currentPlayer?.color === Colors.WHITE ? decrementWhiteTimer : decrementBlackTimer
     timer.current = setInterval(callback, 1000)
-  } 
+  }, [currentPlayer?.color, decrementBlackTimer, decrementWhiteTimer])
+  
+  useEffect(() => {
+    startTimer()
+  }, [currentPlayer, startTimer])
 
-  function decrementBlackTimer() {
-    if (blackTime === 0) {
-      restart()
-    }
-    setBlackTime(prev => prev - 1)
-  }
-  function decrementWhiteTimer() {
-    if (whiteTime === 0) {
-      restart()
-    }
-    setWhiteTime(prev => prev - 1)
-  }
+
   return (
     <div>
       <div>

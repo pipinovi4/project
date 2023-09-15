@@ -1,8 +1,6 @@
-import React, { FC, useEffect } from 'react'
+import { FC } from 'react'
 import { Cell } from '../models/Cell'
 import { FigureNames } from '../figures/Figure'
-import { Colors } from '../models/Colors'
-import { Board } from '../models/Board'
 import useChessNotation from '../hooks/useChessNotation'
 
 interface CellProps {
@@ -30,8 +28,10 @@ const CellComponent: FC<CellProps> = ({ cell, selected, click }) => {
             style={{
                 background: cell.available && cell.figure ? '#6eb5d1' : '',
             }}
-        >   
-            {cell.y === 7 ? notation[0] : ''}{cell.x === 0 ? notation[1] : ''} 
+        >
+                {cell.y === 7 &&  <div className='notation-number'>{notation.number}</div>}
+                {cell.x === 0 && <div className='notation-letter'>{notation.letter}</div>}
+
             {cell.available && !cell.figure && <div className={'available'} />}
             {cell.figure?.logo && <img src={cell.figure.logo} alt="" />}
         </div>

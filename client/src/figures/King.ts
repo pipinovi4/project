@@ -23,6 +23,9 @@ export class King extends Figure {
 
         return false
     }
+
+    canCastle(target: Cell): boolean {}
+
     //castling check on the part of white
     canCastleRight(target: Cell): boolean {
         const direction = 1
@@ -30,7 +33,8 @@ export class King extends Figure {
         //right side check
         if (
             target.x === this.cell.x + castlingStepsRight &&
-            target.y === this.cell.y && !this.cell.board.kingCastled
+            target.y === this.cell.y &&
+            !this.cell.board.kingCastled
         ) {
             for (let x = this.cell.x; x < target.x; x += direction) {
                 if (
@@ -42,9 +46,9 @@ export class King extends Figure {
                 if (this.cell.figure) {
                     // this.cell.board.kingCastled = true;
                     this.cell.board.kingCanCastledRight = true
-                }       
+                }
                 return true
-            }  
+            }
         }
         return false
     }
@@ -55,7 +59,8 @@ export class King extends Figure {
         //left side check
         if (
             target.x === this.cell.x + castlingStepsLeft &&
-            target.y === this.cell.y && !this.cell.board.kingCastled
+            target.y === this.cell.y &&
+            !this.cell.board.kingCastled
         ) {
             for (let x = this.cell.x; x > target.x; x = x + direction) {
                 // const cell = this.cell.board.getCell(x, this.cell.y);
@@ -68,11 +73,11 @@ export class King extends Figure {
                 if (this.cell.figure) {
                     // this.cell.board.kingCastled = true;
                     this.cell.board.kingCanCastledLeft = true
-                }                
+                }
                 return true
             }
         }
-        
+
         return false
     }
 }

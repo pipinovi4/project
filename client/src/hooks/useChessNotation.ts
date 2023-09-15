@@ -6,7 +6,7 @@ const useChessNotation = (cellX: number, CellY: number) => {
 
     const recordX: string = chessNotationLetter[cellX]
     const recordY: number = chessNotationNumber[CellY]
-    return [ recordX, recordY ]
+    return {number: recordX, letter: recordY}
 }
 
 export default useChessNotation

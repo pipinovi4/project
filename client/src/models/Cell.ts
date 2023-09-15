@@ -13,13 +13,7 @@ export class Cell {
     id: number
     cellAttacked: Colors | null = null
 
-    constructor(
-        board: Board,
-        x: number,
-        y: number,
-        color: Colors,
-        figure: Figure | null
-    ) {
+    constructor(board: Board, x: number, y: number, color: Colors) {
         this.x = x
         this.y = y
         this.color = color
@@ -79,7 +73,7 @@ export class Cell {
 
         for (let i = 1; i < absY; i++) {
             if (!this.board.getCell(this.x + dx * i, this.y + dy * i).isEmpty())
-            return false
+                return false
         }
         return true
     }
@@ -91,7 +85,6 @@ export class Cell {
 
     moveFigure(target: Cell) {
         if (this.figure && this.figure?.canMove(target)) {
-            this.figure.moveFigure(target)
             this.figure.isMoved = true
             this.board.moveRecord.push(target)
             if (target.figure) {

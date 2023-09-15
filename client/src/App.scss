@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@500&family=Poppins&display=swap');
+@import './styles/common.scss';
+
 * {
     padding: 0;
     margin: 0;
@@ -9,7 +12,7 @@
     justify-content: center;
     width: 100dvw;
     height: 100dvh;
-    background-color: #222222;
+    background-color: $backgroundColor;
 }
 
 .board {
@@ -42,6 +45,10 @@
     position: relative; 
 }
 
+.cell   {
+    position: relative;
+}
+
 .selected {
     background-color: #c7bfe6;
 }
@@ -61,8 +68,6 @@
 }
 
 .analysis-board {
-    height: calc(100vh - 60px);
-    width: 100%;
     padding: 30px;
     margin-left: 50px;
     background-color: #575757;
@@ -70,4 +75,16 @@
 
 .king-attacked {
     background-color: #123123;
+}
+
+.notation-letter {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.notation-number {
+    position: absolute;
+    right: 0;
+    bottom: 0;
 }
