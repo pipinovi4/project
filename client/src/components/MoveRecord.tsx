@@ -27,14 +27,15 @@ const MoveRecord: FC<MoveRecordProps> = ({ moveRecord }) => {
             }
             setRecordSteps((prevSteps) => [...prevSteps, newStep])
         }
-    }, [moveRecord.length])
+    }, [moveRecord])
 
     return (
         <div className="move-record">
             {recordSteps.map((cell, index) => {
+                // eslint-disable-next-line react-hooks/rules-of-hooks
                 const chessNotation = useChessNotation(cell.x, cell.y)
                 return (
-                    <>
+                    <React.Fragment key={index}>
                         {cell.figure?.logo &&
                             cell.figure.name !== FigureNames.PAWN && (
                                 <img
@@ -45,11 +46,11 @@ const MoveRecord: FC<MoveRecordProps> = ({ moveRecord }) => {
                                     }`}
                                 ></img>
                             )}
-                        <h3>
-                            {index + 1}. {chessNotation[0]}
-                            {chessNotation[1]}
+                        <h3 key={index}>
+                            {index + 1}. {chessNotation.letter}
+                            {chessNotation.number}
                         </h3>
-                    </>
+                    </React.Fragment>
                 )
             })}
         </div>

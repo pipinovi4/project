@@ -16,68 +16,78 @@ export class King extends Figure {
         const xDiff = Math.abs(this.cell.x - target.x)
         const yDiff = Math.abs(this.cell.y - target.y)
 
-        if (!super.canMove(target)) return false
+        if (
+            !super.canMove(target) ||
+            target.cellAttacked.includes(this.getOpponentColor())
+        )
+            return false
         if (xDiff <= 1 && yDiff <= 1) return true
-        if (this.canCastleRight(target)) return true
-        if (this.canCastleLeft(target)) return true
-
+        if (this.canCastle(target)) return true
         return false
     }
 
-    canCastle(target: Cell): boolean {}
+    getOpponentColor(): Colors {
+        return this.cell.figure?.color === Colors.WHITE
+            ? Colors.BLACK
+            : Colors.WHITE
+    }
 
-    //castling check on the part of white
-    canCastleRight(target: Cell): boolean {
-        const direction = 1
-        const castlingStepsRight = 2
-        //right side check
+    canCastle(target: Cell): boolean {
         if (
-            target.x === this.cell.x + castlingStepsRight &&
+            !this.cell.figure?.isMoved &&
+            !this.cell.cellAttacked.includes(this.getOpponentColor()) &&
             target.y === this.cell.y &&
-            !this.cell.board.kingCastled
+            Math.abs(this.cell.x - target.x) === 2
         ) {
-            for (let x = this.cell.x; x < target.x; x += direction) {
+            if (target.x > this.cell.x) {
+                // Castle left
+                for (let x = this.cell.x + 1; x < target.x; x++) {
+                    const intermediateCell = this.cell.board.getCell(x, this.cell.y);
+                    if (
+                        !intermediateCell.isEmpty() ||
+                        intermediateCell.cellAttacked.includes(this.getOpponentColor())
+                    ) {
+                        console.log(`Cannot castle left: intermediateCell (${x}, ${this.cell.y}) is not empty or attacked by opponent.`);
+                        return false;
+                    }
+                }
+                const rookCell = this.cell.board.getCell(target.x + 1, this.cell.y);
                 if (
-                    this.cell.board.getCell(x, this.cell.y).cellAttacked &&
-                    !this.cell.board.getCell(x, this.cell.y).isEmpty()
+                    !rookCell.isEmpty() &&
+                    rookCell.figure instanceof Rook &&
+                    !rookCell.figure.isMoved
                 ) {
-                    break
+                    return true;
+                } else {
+                    console.log(`Cannot castle left: rookCell (${target.x + 1}, ${this.cell.y}) is not a valid rook or has moved.`);
                 }
-                if (this.cell.figure) {
-                    // this.cell.board.kingCastled = true;
-                    this.cell.board.kingCanCastledRight = true
+            } else {
+                // Castle right
+                for (let x = this.cell.x - 1; x > target.x; x--) {
+                    const intermediateCell = this.cell.board.getCell(x, this.cell.y);
+                    if (
+                        !intermediateCell.isEmpty() ||
+                        intermediateCell.cellAttacked.includes(this.getOpponentColor())
+                    ) {
+                        console.log(`Cannot castle right: intermediateCell (${x}, ${this.cell.y}) is not empty or attacked by opponent.`);
+                        return false;
+                    }
                 }
-                return true
-            }
-        }
-        return false
-    }
-    //castling check on the part of black
-    canCastleLeft(target: Cell): boolean {
-        const direction = -1
-        const castlingStepsLeft = -2
-        //left side check
-        if (
-            target.x === this.cell.x + castlingStepsLeft &&
-            target.y === this.cell.y &&
-            !this.cell.board.kingCastled
-        ) {
-            for (let x = this.cell.x; x > target.x; x = x + direction) {
-                // const cell = this.cell.board.getCell(x, this.cell.y);
+                const rookCell = this.cell.board.getCell(target.x - 2, this.cell.y);
                 if (
-                    this.cell.board.getCell(x, this.cell.y).cellAttacked &&
-                    !this.cell.board.getCell(x, this.cell.y).isEmpty()
+                    !rookCell.isEmpty() &&
+                    rookCell.figure instanceof Rook &&
+                    !rookCell.figure.isMoved
                 ) {
-                    break
+                    return true;
+                } else {
+                    console.log(`Cannot castle right: rookCell (${target.x - 2}, ${this.cell.y}) is not a valid rook or has moved.`);
                 }
-                if (this.cell.figure) {
-                    // this.cell.board.kingCastled = true;
-                    this.cell.board.kingCanCastledLeft = true
-                }
-                return true
             }
+        } else {
+            console.log(`Cannot castle: King has moved (${this.cell.figure?.isMoved}), is attacked (${this.cell.cellAttacked}), or invalid target.`);
         }
-
-        return false
+        return false;
     }
+    
 }

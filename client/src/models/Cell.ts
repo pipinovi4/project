@@ -11,7 +11,7 @@ export class Cell {
     board: Board
     available: boolean
     id: number
-    cellAttacked: Colors | null = null
+    cellAttacked: Array<Colors> = []
 
     constructor(board: Board, x: number, y: number, color: Colors) {
         this.x = x
@@ -78,6 +78,62 @@ export class Cell {
         return true
     }
 
+    castleMove(target: Cell) {
+        const rookCell =
+            target.x - this.x === 2
+                ? this.board.getCell(target.x + 1, this.y)
+                : this.board.getCell(target.x - 2, this.y)
+
+        if (this.figure && rookCell.figure) {
+            const newX = this.x + (target.x - this.x) / 2
+            const newRookCell = this.board.getCell(newX, this.y)
+            newRookCell.figure = new Rook(
+                this.figure.color,
+                this.board.cells[this.y][newX]
+            )
+
+            // Устанавливаем флаги isMoved для короля и ладьи
+            this.figure.isMoved = true
+            newRookCell.figure.isMoved = true
+
+            // Очищаем начальные клетки
+            rookCell.figure = null
+        }
+    }
+
+    updateCellsUnderAttack() {
+        this.board.cells.forEach((row) => {
+            row.forEach((cell) => {
+                cell.cellAttacked = []
+            })
+        })
+
+        this.board.cells.forEach((row) => {
+            row.forEach((cell) => {
+                if (cell.figure) {
+                    for (let i = 0; i < 8; i++) {
+                        for (let j = 0; j < 8; j++) {
+                            const targetCell = this.board.getCell(i, j)
+                            if (cell.figure.canMove(targetCell)) {
+                                // Сравниваем клетки по их объектам, а не содержимому
+                                console.log('cell', targetCell)
+                                if (
+                                    !targetCell.cellAttacked.includes(
+                                        cell.figure.color
+                                    )
+                                ) {
+                                    targetCell.cellAttacked.push(
+                                        cell.figure.color
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        })
+    }
+
     setFigure(figure: Figure) {
         this.figure = figure
         this.figure.cell = this
@@ -87,43 +143,16 @@ export class Cell {
         if (this.figure && this.figure?.canMove(target)) {
             this.figure.isMoved = true
             this.board.moveRecord.push(target)
+            this.figure.moveFigure(target)
+            if (this.figure.name === FigureNames.KING && Math.abs(target.x - this.x) === 2) {
+                this.castleMove(target)
+            }
             if (target.figure) {
                 this.addLostFigure(target.figure)
             }
-            if (
-                this.figure.name === FigureNames.KING &&
-                !this.board.kingCastled
-            ) {
-                const colorFigure =
-                    this.figure.color === Colors.WHITE
-                        ? Colors.WHITE
-                        : Colors.BLACK
-                const rookPlaceRight = this.board.getCell(target.x - 1, this.y)
-                const rookPlaceLeft = this.board.getCell(target.x + 1, this.y)
-                if (
-                    this.board.getCell(target.x + 1, this.y).figure?.name ===
-                        FigureNames.ROOK &&
-                    this.board.kingCanCastledRight
-                ) {
-                    this.board.getCell(target.x + 1, this.y).figure = null
-                    rookPlaceRight.figure = new Rook(
-                        colorFigure,
-                        rookPlaceRight
-                    )
-                    rookPlaceRight.figure.hasMovedFlag = true
-                } else if (
-                    this.board.getCell(target.x - 2, this.y).figure?.name ===
-                        FigureNames.ROOK &&
-                    this.board.kingCanCastledLeft
-                ) {
-                    this.board.getCell(target.x - 2, this.y).figure = null
-                    rookPlaceLeft.figure = new Rook(colorFigure, rookPlaceLeft)
-                    rookPlaceLeft.figure.hasMovedFlag = true
-                }
-            }
-            this.board.updateCellsUnderAttack(target)
             target.setFigure(this.figure)
             this.figure = null
+            this.updateCellsUnderAttack()
         }
     }
 

@@ -18,9 +18,6 @@ const App = () => {
         setCurrentPlayer(whitePlayer);
     }, [])
 
-    useEffect(() => {
-        console.log(currentPlayer)
-    }, [setCurrentPlayer])
     
     function restart() {
         const newBoard = new Board();
@@ -31,7 +28,6 @@ const App = () => {
   
     function swapPlayer() {
       setCurrentPlayer(currentPlayer?.color === Colors.WHITE ? blackPlayer : whitePlayer)
-      console.log('срабоатло')
     }
   
     return (

@@ -22,9 +22,9 @@ export class Board {
             const row: Cell[] = []
             for (let j = 0; j < 8; j++) {
                 if ((i + j) % 2 !== 0) {
-                    row.push(new Cell(this, j, i, Colors.BLACK, null))
+                    row.push(new Cell(this, j, i, Colors.BLACK))
                 } else {
-                    row.push(new Cell(this, j, i, Colors.WHITE, null))
+                    row.push(new Cell(this, j, i, Colors.WHITE))
                 }
             }
             this.cells.push(row)
@@ -55,22 +55,6 @@ export class Board {
     public getCell(x: number, y: number) {
         return this.cells[y][x]
     }
-
-    updateCellsUnderAttack(target: Cell) {
-        this.cells.forEach((row) => {
-            row.forEach((cell) => {
-                cell.cellAttacked = null
-                if (cell.figure?.canMove(target)) {
-                    if (cell.figure.color === Colors.WHITE) {
-                        target.cellAttacked = Colors.WHITE 
-                    } else if (cell.figure.color === Colors.BLACK) {
-                        target.cellAttacked = Colors.BLACK
-                    }
-                }
-            });
-        });
-    }
-    
 
     private addPawns() {
         if (this.cells.length === 0) {

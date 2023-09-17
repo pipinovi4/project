@@ -17,9 +17,7 @@ export class Figure {
     logo: typeof logo | null
     cell: Cell
     name: FigureNames
-    id: number
     hasMovedFlag = false
-    figureMoved = false
     isMoved = false
     kingAttacked = false
     prevCellAttacked: number[][] = []
@@ -31,7 +29,6 @@ export class Figure {
         this.cell.figure = this
         this.logo = null
         this.name = FigureNames.FIGURE
-        this.id = Math.random()
     }
 
     setMoved(): void {
@@ -44,10 +41,12 @@ export class Figure {
 
     canMove(target: Cell): boolean {
         if (target.figure?.color === this.color) return false
-        if (target.figure?.name === FigureNames.KING) {
+        if (target.figure?.name === FigureNames.KING && target.figure.color === this.cell.figure?.color) {
             return false
         } 
         return true
     }
+
+    moveFigure(target: Cell) {}
 
 }

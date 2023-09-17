@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Board } from '../models/Board'
 import CellComponents from './CellComponents'
 import { Cell } from '../models/Cell'
@@ -36,21 +36,19 @@ const BoardComponents: FC<BoardProps> = ({
         }
     }
 
-    const updateBoard = useCallback(() => {
-        const newBoard = board.getCopyBoard()
-        setBoard(newBoard)
-      }, [board, setBoard])
-    
-    const highlightCells = useCallback(() => {
-        board.highlightCells(selectedCell)
-        updateBoard()
-    }, [board, selectedCell, updateBoard])
-
     useEffect(() => {
         highlightCells()
-    }, [highlightCells, selectedCell])
-    
-    
+    }, [selectedCell])
+
+    const highlightCells = () => {
+        board.highlightCells(selectedCell)
+        updateBoard()   
+    }
+
+    const  updateBoard = () => {
+        const newBoard = board.getCopyBoard()
+        setBoard(newBoard)
+      }
 
     return (
         <div>
